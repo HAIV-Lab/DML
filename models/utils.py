@@ -1,7 +1,6 @@
 from models.wrn import WideResNet
 from models.resnet50 import *
 from models.resnet34 import *
-from models.mobilenetv2 import *
 from models.densenet import *
 import torch
 from torchvision.models import densenet121
@@ -14,10 +13,6 @@ def build_model(model_type, num_classes, device, args):
     elif args.net == 'resnet34':
         print('Using ResNet34')
         net = create_model(num_classes=num_classes, use_norm=False, feature_norm=False)  #True
-    elif args.net == 'mobilenet':
-        print('Using mobilenet')
-        net = create_model_MNet(num_classes=num_classes, use_norm=False, feature_norm=False)  #True
-        
     elif args.net == 'densenet':
         print('Using DenseNet')
         net = DenseNet(num_classes=num_classes,  use_norm=True, feature_norm=False)  #True
