@@ -266,11 +266,8 @@ def main():
     start_epoch = 0
     if args.load != '':
         for i in range(1000 - 1, -1, -1):
-            path = '/data/zzh/EXPERIMENT/Label-Similarity/ood/snapshots/C100_UU'#C100_R34/'
-            #model_name = os.path.join(path, 'cifar100_den_CE_UU_standard_epoch_169.pt')
-            model_name = os.path.join(path, args.method_name + '_epoch_' + str(i) + '.pt')
-            #model_name = os.path.join(os.path.join(args.load, alg), args.method_name + '_epoch_' + str(i) + '.pt')
-            #print(model_name)
+            model_name = os.path.join(os.path.join(args.load, alg), args.method_name + '_epoch_' + str(i) + '.pt')
+            print(model_name)
             if os.path.isfile(model_name):
                 weights = torch.load(model_name, map_location=device)
                 weights = {
@@ -279,25 +276,16 @@ def main():
                     else net.state_dict()[k]
                     for k in net.state_dict()
                 } 
-                ##############################
-                #weights['fc.weight'] = weights['fc.weight']#.t() classifier
+                # loading
                 weights['fc.weight'] = weights['fc.weight']
-                ##############################
-                #print(weights['fc.weight'].norm(2, 0))  
-                #print(weights['fc.weight'].norm(2, 1))  
                 net.load_state_dict(weights)
-                #print(net.scale)
-                #weights['fc.weight'] = weights['fc.weight'].t()
-                
-                #we = weights['fc.weight'].clone().detach().cpu()
-                #we = F.normalize(we, dim=0)
                 w = np.array(weights['fc.weight'].clone().detach().cpu())  #.t()
                 if 'fc.bias' in weights.keys():
                     b = np.array(weights['fc.bias'].clone().detach().cpu())
                     print('with bias')
                 else:
                     b = np.array(torch.zeros(num_classes))
-                print(w,b)
+
                 print('Model restored! Epoch:', i)
                 start_epoch = i + 1
                 break
@@ -307,7 +295,7 @@ def main():
     net.eval()
     #cudnn.benchmark = True  # fire on all cylinders
     
-    data_name = [ "Textures", "SVHN", "LSUN-C", "LSUN-R", "iSUN", "Places365"] #'SVHN'
+    data_name = ["Textures", "SVHN", "LSUN-C", "LSUN-R", "iSUN", "Places365"]
     ood_names = data_name
     print(f"ood datasets: {data_name}")
 
@@ -344,85 +332,7 @@ def main():
     feature_id_train = np.array(feature_id_train.cpu())
     feature_id_val = np.array(feature_id_val.cpu())
 
-    '''
-    logit_train_mean = []
-    logit_val_mean = []
-    for i in range(10):
-        logit_mean = np.mean(logit_id_train[train_labels == i], axis=0)
-        logit_train_mean.append(logit_mean)
-        logit_mean = np.mean(logit_id_val[val_labels == i], axis=0)
-        logit_val_mean.append(logit_mean)
-    logit_ood_mean_all = []
-    for i in range(5):
-        logit_mean = np.mean(logit_oods_all[i][data_name], axis=0)
-        logit_mean = {data_name: logit_mean}
-        logit_ood_mean_all.append(logit_mean)
-    #print(logit_ood_mean_all)
-    # label_name = ['airplane','automobile','bird','cat','deer','dog','frog','horse','ship','truck']
-    # for i in range(10):
-    #     print('*'*10, label_name[i])
-    #     print('logit_train_mean', logit_train_mean[i])
-    #     print('logit_val_mean', logit_val_mean[i])
-    #     print('*' * 4, 'OOD', '*' * 4)
-    #     for j in range(5):
-    #         print('logit_ood_mean', logit_ood_mean_all[j])
-
-
-    method = 'KL-logit'
-    print(f'\n{method}')
-    result = []
-
-    print('computing classwise mean logit...')
-
-    pred = np.argmax(logit_id_val, axis=1)
-    target = np.array([logit_train_mean[i] for i in pred])
-    diff = logit_id_val - target
-    score_id = np.mean(np.abs(diff), axis=1)
-
-    for name in logit_oods_all[0].keys():
-        auroc = 0.
-        aupr = 0.
-        fpr95 = 0.
-        for i in range(5):
-            pred = np.argmax(logit_oods_all[i][name], axis=1)
-            target = np.array([logit_train_mean[i] for i in pred])
-            diff = logit_oods_all[i][name] - target
-            score_ood = np.mean(np.abs(diff), axis=1)
-            auroc_tmp, aupr_tmp, fpr95_tmp = get_measures(score_id[:], score_ood[:], 0.95)
-            #print(auroc_tmp, aupr_tmp, fpr95_tmp )
-            auroc += auroc_tmp / 5
-            aupr += aupr_tmp / 5
-            fpr95 += fpr95_tmp / 5
-        result.append(dict(method=method, oodset=name, auroc=auroc, aupr=aupr, fpr=fpr95))
-        print(f'{method}: {name} auroc {auroc:.2%}, aupr {aupr:.2%}, fpr {fpr95:.2%}')
-    df = pd.DataFrame(result)
-    #dfs.append(df)
-    print(f'mean auroc {df.auroc.mean():.2%}, aupr {aupr:.2%}, {df.fpr.mean():.2%}')
-    '''
-    
-    #ood_names = [splitext(basename(ood))[0] for ood in args.ood_features]
-    #print(f"ood datasets: {ood_names}")
-
-    #w, b = mmcv.load(args.fc)
-    #print(f'{w.shape=}, {b.shape=}')
-
-    #train_labels = np.array([int(line.rsplit(' ', 1)[-1]) for line in mmcv.list_from_file(args.train_label)], dtype=int)
-
     recall = 0.95
-
-    
-    #feature_id_train = mmcv.load(args.id_train_feature).squeeze()
-    #feature_id_val = mmcv.load(args.id_val_feature).squeeze()
-    #feature_oods = {name: mmcv.load(feat).squeeze() for name, feat in zip(ood_names, args.ood_features)}
-    
-    
-    #print(f'{feature_id_train.shape=}, {feature_id_val.shape=}')
-    #for name, ood in feature_oods.items():
-        #print(f'{name} {ood.shape}')
-    print('computing logits...')
-    #logit_id_train = feature_id_train @ w.T + b
-    #logit_id_val = feature_id_val @ w.T + b
-    #logit_oods = {name: feat @ w.T + b for name, feat in feature_oods.items()}
 
     print('computing softmax...')
     softmax_id_train = softmax(logit_id_train, axis=-1)
@@ -430,8 +340,7 @@ def main():
 
     softmax_oods = []
     for i in range(10):
-        softmax_oods.append({name: softmax(logit, axis=-1) for name, logit in logit_oods_all[i].items()})
-    
+        softmax_oods.append({name: softmax(logit, axis=-1) for name, logit in logit_oods_all[i].items()})   
     
     preds = np.argmax(softmax_id_val, axis=1)
     print(preds.shape)
@@ -447,7 +356,6 @@ def main():
     print(w.shape,b.shape, pinv(w).shape)
     u = -np.matmul(pinv(w), b)
     df = pd.DataFrame(columns=['method', 'oodset', 'auroc', 'fpr'])
-
     dfs = []
 
     # ---------------------------------------
@@ -473,7 +381,7 @@ def main():
     print('\n\nMean Test Results')
     print_measures(np.mean(auroc_list), np.mean(aupr_list), np.mean(fpr_list), method_name=args.method_name)
 
-    '''
+    
     # ---------------------------------------
     method = 'Odin'
     print(f'\n{method}')
@@ -518,29 +426,6 @@ def main():
         print_measures_with_std(aurocs, auprs, fprs, args.method_name)
     print('\n\nMean Test Results')
     print_measures(np.mean(auroc_list), np.mean(aupr_list), np.mean(fpr_list), method_name=args.method_name)
-
-
-    # ---------------------------------------
-    method = 'decoupling MaxLogit'
-    print(f'\n{method}')
-    result = []
-    score_id = np.log(logit_id_val.max(axis=-1))
-    auroc_list, aupr_list, fpr_list = [], [], []
-    for name in softmax_oods[0].keys():
-        aurocs, auprs, fprs = [], [], []
-        print(name)
-        for i in range(10):
-            logit_ood_tmp = logit_oods_all[i][name]
-            score_ood = np.log(logit_ood_tmp.max(axis=-1))
-            measures = get_measures(score_id[:], score_ood[:], 0.95)
-            aurocs.append(measures[0]); auprs.append(measures[1]); fprs.append(measures[2])
-        #result.append(dict(method=method, oodset=name, auroc=auroc, aupr=aupr, fpr=fpr95))
-        auroc = np.mean(aurocs); aupr = np.mean(auprs); fpr = np.mean(fprs)
-        auroc_list.append(auroc); aupr_list.append(aupr); fpr_list.append(fpr)
-        print_measures_with_std(aurocs, auprs, fprs, args.method_name)
-    print('\n\nMean Test Results')
-    print_measures(np.mean(auroc_list), np.mean(aupr_list), np.mean(fpr_list), method_name=args.method_name)
-    
     
     # ---------------------------------------
     method = 'Energy'
@@ -656,14 +541,13 @@ def main():
     print('\n\nMean Test Results')
     print_measures(np.mean(auroc_list), np.mean(aupr_list), np.mean(fpr_list), method_name=args.method_name)
 
-    '''
+    
     # ---------------------------------------
     method = 'ViM'
     print(f'\n{method}')
     result = []
     #DIM = 1000 if feature_id_val.shape[-1] >= 2048 else 512
-    DIM = 64
-    ################################
+    DIM = 64  # we set the dim=64 because the WRN net feature dim is 128
     print(f'{DIM=}')
 
     print('computing principal space...')
@@ -704,28 +588,6 @@ def main():
     print('\n\nMean Test Results')
     print_measures(np.mean(auroc_list), np.mean(aupr_list), np.mean(fpr_list), method_name=args.method_name)
     
-    '''
-    #######
-    method = 'KL-Matching'
-    print(f'\n{method}')
-    result = []
-
-    print('computing classwise mean softmax...')
-    pred_labels_train = np.argmax(softmax_id_train, axis=-1)
-    mean_softmax_train = [softmax_id_train[pred_labels_train==i].mean(axis=0) for i in tqdm(range(1000))]
-
-    score_id = -pairwise_distances_argmin_min(softmax_id_val, np.array(mean_softmax_train), metric=kl)[1]
-
-    for name, softmax_ood in softmax_oods.items():
-        score_ood = -pairwise_distances_argmin_min(softmax_ood, np.array(mean_softmax_train), metric=kl)[1]
-        auc_ood = auc(score_id, score_ood)[0]
-        fpr_ood, _ = fpr_recall(score_id, score_ood, recall)
-        result.append(dict(method=method, oodset=name, auroc=auc_ood, fpr=fpr_ood))
-        print(f'{method}: {name} auroc {auc_ood:.2%}, fpr {fpr_ood:.2%}')
-    df = pd.DataFrame(result)
-    dfs.append(df)
-    print(f'mean auroc {df.auroc.mean():.2%}, {df.fpr.mean():.2%}')
-    '''
 
 if __name__ == '__main__':
     main()
