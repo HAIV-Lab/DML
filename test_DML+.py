@@ -127,7 +127,7 @@ test_loader = torch.utils.data.DataLoader(test_data, batch_size=args.test_bs, sh
 # /////////////// Load MCF and MNC ///////////////
 
 # Create model
-net_MCF = build_model( num_classes, device, args, True, True)
+net_MCF = build_model(num_classes, device, args, True, True)
 net_MNC = build_model(num_classes, device, args, True, False)
 
 
@@ -207,8 +207,8 @@ def get_and_print_results(ood_loader, in_score1, in_score2, num_to_avg=args.num_
             out_score2_tmp = out_score2/tmp1
             
 
-            in_score = 3*in_score1_tmp + in_score2_tmp   # ordinary, score1 is 25 times bigger than score2
-            out_score = 3*out_score1_tmp + out_score2_tmp
+            in_score = in_score1_tmp + in_score2_tmp  
+            out_score = out_score1_tmp + out_score2_tmp
 
             ############################
             measures = get_measures(in_score, out_score)
@@ -225,7 +225,7 @@ def get_and_print_results(ood_loader, in_score1, in_score2, num_to_avg=args.num_
 
 
 if __name__ == '__main__':
-    OOD_data_list = [ "Textures", "SVHN", "LSUN-C", "LSUN-R", "iSUN", "Places365"]
+    OOD_data_list = ["Textures", "SVHN", "LSUN-C", "LSUN-R", "iSUN", "Places365"]
 
     for data_name in OOD_data_list:
         if data_name == args.dataset:
