@@ -90,4 +90,14 @@ AUROC:                  92.72
 AUPR:                   98.29
 
 ```
-
+## References
+```
+@InProceedings{Zhang_2023_CVPR,
+    author    = {Zhang, Zihan and Xiang, Xiang},
+    title     = {Decoupling MaxLogit for Out-of-Distribution Detection},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    month     = {June},
+    year      = {2023},
+    pages     = {3388-3397}
+}
+```
