@@ -5,6 +5,7 @@
 ## Description
 
 Official PyTorch implementation of "Decoupling MaxLogit for Out-of-Distribution Detection"
+The new version could be found [here](https://github.com/Z-ZHHH/CVPR23-DML)
 
 ## Data
 
