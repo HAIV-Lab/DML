@@ -101,4 +101,4 @@ AUPR:                   98.29
     pages     = {3388-3397}
 }
 ```
-[Correspondence](xex@hust.edu.cn)
+Correspondence: xex@hust.edu.cn
