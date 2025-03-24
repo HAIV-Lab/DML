@@ -17,7 +17,6 @@ School of Artificial Intelligence and Automation, Huazhong University of Science
 
 ## Description
 
-Official PyTorch implementation of "Decoupling MaxLogit for Out-of-Distribution Detection" [here](https://github.com/Z-ZHHH/CVPR23-DML)
 Official PyTorch implementation of "Decoupling MaxLogit for Out-of-Distribution Detection"[here](https://openaccess.thecvf.com/content/CVPR2023/papers/Zhang_Decoupling_MaxLogit_for_Out-of-Distribution_Detection_CVPR_2023_paper.pdf)", in CVPR 2023.
 
 ## Data
