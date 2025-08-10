@@ -1,4 +1,4 @@
-# Decoupling MaxLogit for Out-of-Distribution Detection
+# Official Code Repo for DML：Decoupling MaxLogit for Out-of-Distribution Detection, in CVPR 2023
 
 <div align="center">
 
@@ -8,7 +8,7 @@
 
 </div>
 <div>
-School of Artificial Intelligence and Automation, Huazhong University of Science and Technology&emsp;
+Huazhong University of Science and Technology&emsp;
 </div>
 </div>
 <br>
